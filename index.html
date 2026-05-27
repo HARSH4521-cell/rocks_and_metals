@@ -1,395 +1,754 @@
-bash
-
-cat > /mnt/user-data/outputs/peehu_birthday.html << 'HTMLEOF'
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Happy Birthday Peehu 🌸</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Quicksand:wght@300;400;500;600&display=swap" rel="stylesheet">
+<title>Metals &amp; Rocks Universe — by HARSH</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-:root{
-  --pink:#ffb3c6;--pink2:#ff85a1;--pink3:#ff4d7d;
-  --peach:#ffe5d0;--peach2:#ffcba4;
-  --lavender:#e8d5ff;--lav2:#c9a8ff;
-  --gold:#ffd700;--cream:#fff9f5;
-  --text:#4a2040;--muted:#9b6b8a;
-}
-body{background:var(--cream);font-family:'Quicksand',sans-serif;color:var(--text);overflow-x:hidden;min-height:100vh}
-canvas#bgCanvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{
+    --gold:#FFD700;--gold2:#FFA500;--silver:#C0C0C0;--cyan:#00FFFF;--violet:#8B00FF;
+    --pink:#FF006E;--teal:#00F5FF;--ember:#FF4500;
+    --glass:rgba(255,255,255,0.04);--glass2:rgba(255,255,255,0.08);
+  }
+  html,body{width:100%;height:100%;overflow:hidden;background:#000;cursor:none}
+  #app{width:100%;height:100vh;position:relative;overflow:hidden;font-family:'Rajdhani',sans-serif}
 
-.screen{position:fixed;inset:0;z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .8s ease;background:var(--cream)}
-.screen.hidden{opacity:0;pointer-events:none}
+  /* CUSTOM CURSOR */
+  #cursor{position:fixed;width:12px;height:12px;background:var(--cyan);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:transform 0.1s,background 0.2s;mix-blend-mode:difference}
+  #cursor-ring{position:fixed;width:36px;height:36px;border:1px solid rgba(0,255,255,0.4);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:transform 0.15s cubic-bezier(.17,.67,.83,.67),width 0.3s,height 0.3s,border-color 0.3s}
 
-#lockScreen{background:linear-gradient(135deg,#ffe0ef 0%,#f0d6ff 50%,#d6eaff 100%)}
-.lock-title{font-family:'Playfair Display',serif;font-size:2.8rem;color:var(--text);text-align:center;margin-bottom:.3rem;animation:floatY 3s ease-in-out infinite}
-.lock-sub{font-size:1rem;color:var(--muted);margin-bottom:2.5rem;text-align:center;letter-spacing:.05em}
-.key-form{display:flex;flex-direction:column;align-items:center;gap:1rem}
-.key-input{width:160px;padding:.8rem 1.2rem;text-align:center;font-size:1.4rem;letter-spacing:.4rem;border:2px solid var(--pink);border-radius:50px;background:rgba(255,255,255,.7);color:var(--text);outline:none;font-family:'Quicksand',sans-serif;transition:.3s}
-.key-input:focus{border-color:var(--pink3);box-shadow:0 0 0 4px rgba(255,133,161,.2)}
-.key-btn{padding:.7rem 2rem;background:linear-gradient(135deg,var(--pink2),var(--pink3));color:#fff;border:none;border-radius:50px;font-size:1rem;font-family:'Quicksand',sans-serif;font-weight:600;cursor:pointer;transition:.3s;letter-spacing:.05em}
-.key-btn:hover{transform:scale(1.04);box-shadow:0 4px 20px rgba(255,77,125,.35)}
-.lock-hearts{font-size:2rem;animation:pulse 1.5s ease-in-out infinite}
-.key-error{color:#e8547a;font-size:.85rem;margin-top:-.3rem;opacity:0;transition:.3s}
-.key-error.show{opacity:1}
-.floating-emoji{position:absolute;font-size:1.5rem;animation:floatRandom 6s ease-in-out infinite;opacity:.5}
+  /* STAR CANVAS */
+  #starfield{position:absolute;inset:0;z-index:0}
 
-#countdownScreen{background:linear-gradient(160deg,#fff0f7 0%,#f5e6ff 60%,#e6f0ff 100%)}
-.cd-title{font-family:'Playfair Display',serif;font-size:2.2rem;color:var(--text);text-align:center;margin-bottom:.3rem;line-height:1.3}
-.cd-names{font-family:'Playfair Display',serif;font-style:italic;font-size:1.3rem;color:var(--pink3);margin-bottom:2rem;text-align:center}
-.cd-grid{display:flex;gap:1.2rem;margin-bottom:2rem;flex-wrap:wrap;justify-content:center}
-.cd-box{display:flex;flex-direction:column;align-items:center;background:rgba(255,255,255,.85);border:1.5px solid var(--pink);border-radius:20px;padding:1.2rem 1.5rem;min-width:90px;box-shadow:0 4px 20px rgba(255,133,161,.15);backdrop-filter:blur(4px)}
-.cd-num{font-size:3rem;font-weight:700;color:var(--pink3);line-height:1;font-family:'Playfair Display',serif;transition:.3s}
-.cd-label{font-size:.7rem;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-top:.3rem}
-.cd-message{font-size:1rem;color:var(--muted);text-align:center;max-width:340px;line-height:1.7;margin-bottom:1.5rem}
-.cd-flower{font-size:2.5rem;animation:spin 10s linear infinite}
+  /* WATERMARK */
+  #watermark{position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;background:#000;animation:wmFade 0.8s ease 3.2s forwards}
+  @keyframes wmFade{to{opacity:0;pointer-events:none}}
+  .wm-text{font-family:'Orbitron',monospace;font-size:clamp(3rem,12vw,9rem);font-weight:900;letter-spacing:0.25em;
+    background:linear-gradient(135deg,#FFD700 0%,#FFA500 25%,#FF006E 50%,#8B00FF 75%,#00FFFF 100%);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+    animation:wmPulse 3.2s ease-in-out forwards;filter:drop-shadow(0 0 40px rgba(255,215,0,0.6))}
+  @keyframes wmPulse{
+    0%{opacity:0;transform:scale(0.6) translateY(20px);letter-spacing:0.05em}
+    20%{opacity:1;transform:scale(1.08) translateY(0);letter-spacing:0.3em}
+    70%{opacity:1;transform:scale(1) translateY(0);letter-spacing:0.25em}
+    100%{opacity:0;transform:scale(1.1);letter-spacing:0.4em}
+  }
+  .wm-sub{font-family:'Share Tech Mono',monospace;font-size:clamp(0.5rem,2vw,0.85rem);letter-spacing:0.6em;color:rgba(255,215,0,0.5);margin-top:0.5rem;animation:wmSub 3.2s ease forwards}
+  @keyframes wmSub{0%{opacity:0}30%{opacity:0.7}70%{opacity:0.7}100%{opacity:0}}
+  .wm-lines{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+  .wm-scanline{position:absolute;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,215,0,0.3),transparent);animation:scan 2s linear infinite}
+  @keyframes scan{0%{top:-2%}100%{top:102%}}
 
-#birthdayScreen{background:transparent;backdrop-filter:none}
-.bday-bg{position:fixed;inset:0;background:linear-gradient(135deg,#ffe0ef 0%,#ffd6ff 40%,#d6e8ff 100%);z-index:-1}
-.bday-content{display:flex;flex-direction:column;align-items:center;padding:2rem 1.5rem;width:100%;max-width:700px;z-index:10;gap:1.5rem;overflow-y:auto;max-height:100vh}
-.bday-name{font-family:'Playfair Display',serif;font-size:3rem;color:var(--text);text-align:center;animation:floatY 3s ease-in-out infinite}
-.bday-sub{font-size:1.1rem;color:var(--muted);text-align:center;line-height:1.8;max-width:380px}
-.tab-row{display:flex;gap:.8rem;flex-wrap:wrap;justify-content:center}
-.tab-btn{padding:.55rem 1.3rem;border-radius:50px;border:1.5px solid var(--pink);background:rgba(255,255,255,.7);color:var(--muted);font-family:'Quicksand',sans-serif;font-size:.85rem;font-weight:600;cursor:pointer;transition:.3s;letter-spacing:.03em}
-.tab-btn.active,.tab-btn:hover{background:linear-gradient(135deg,var(--pink),var(--pink2));color:#fff;border-color:transparent;box-shadow:0 3px 12px rgba(255,133,161,.3)}
-.panel{display:none;width:100%;animation:fadeIn .5s ease}
-.panel.active{display:block}
+  /* PAGES */
+  .page{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:10;transition:opacity 0.8s cubic-bezier(.4,0,.2,1),transform 0.8s cubic-bezier(.4,0,.2,1)}
+  .page.hidden{opacity:0;pointer-events:none;transform:translateY(30px)}
 
-.cake-wrap{display:flex;flex-direction:column;align-items:center;gap:1.2rem}
-.cake-svg-wrap{filter:drop-shadow(0 8px 24px rgba(255,133,161,.25));cursor:pointer;transition:.3s}
-.cake-svg-wrap:hover{transform:scale(1.03)}
-.cake-btn{padding:.75rem 2.2rem;background:linear-gradient(135deg,#ff85a1,#ff4d7d);color:#fff;border:none;border-radius:50px;font-size:1rem;font-family:'Quicksand',sans-serif;font-weight:600;cursor:pointer;letter-spacing:.05em;box-shadow:0 4px 20px rgba(255,77,125,.3);transition:.3s;animation:pulse 2s ease-in-out infinite}
-.cake-btn:hover{transform:scale(1.05)}
-.cake-hint{font-size:.85rem;color:var(--muted);text-align:center}
+  /* INTRO PAGE */
+  #intro-page .cosmic-title{font-family:'Orbitron',monospace;font-size:clamp(1.5rem,5vw,4rem);font-weight:900;text-align:center;line-height:1.2;
+    background:linear-gradient(135deg,#fff 0%,var(--cyan) 40%,var(--gold) 70%,var(--pink) 100%);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+    animation:titleReveal 1.5s cubic-bezier(.2,1,.3,1) 4.5s both;filter:drop-shadow(0 0 30px rgba(0,255,255,0.3))}
+  @keyframes titleReveal{from{opacity:0;transform:translateY(40px) scale(0.9);letter-spacing:-0.05em}to{opacity:1;transform:none;letter-spacing:0.02em}}
+  .cosmic-sub{font-family:'Rajdhani',sans-serif;font-size:clamp(0.8rem,2vw,1.1rem);letter-spacing:0.4em;color:rgba(255,255,255,0.5);text-align:center;animation:fadeUp 1s ease 5.2s both}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+  .cosmic-line{width:200px;height:1px;background:linear-gradient(90deg,transparent,var(--cyan),transparent);margin:1.5rem auto;animation:lineExpand 1s ease 5.5s both}
+  @keyframes lineExpand{from{width:0;opacity:0}to{width:200px;opacity:1}}
 
-.msg-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
-.msg-card{background:rgba(255,255,255,.85);border:1.5px solid var(--pink);border-radius:20px;padding:1.2rem;text-align:center;position:relative;overflow:hidden;transition:.3s}
-.msg-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(255,133,161,.2)}
-.msg-card::before{content:attr(data-emoji);position:absolute;top:.7rem;right:.8rem;font-size:1.3rem}
-.msg-card p{font-size:.88rem;color:var(--muted);line-height:1.7;font-style:italic}
-.msg-card .msg-from{margin-top:.7rem;font-size:.78rem;color:var(--pink3);font-weight:600}
+  /* CATEGORY CARDS */
+  .cat-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;width:100%;max-width:700px;padding:0 1.5rem;animation:fadeUp 1s ease 5.8s both}
+  .cat-card{position:relative;border-radius:16px;padding:2rem 1.5rem;text-align:center;cursor:pointer;overflow:hidden;
+    border:1px solid rgba(255,255,255,0.1);background:var(--glass);backdrop-filter:blur(20px);
+    transition:transform 0.4s cubic-bezier(.2,1,.3,1),border-color 0.3s,box-shadow 0.4s}
+  .cat-card::before{content:'';position:absolute;inset:0;background:var(--grad);opacity:0.08;transition:opacity 0.3s;border-radius:16px}
+  .cat-card::after{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(circle at center,rgba(255,255,255,0.05) 0%,transparent 60%);opacity:0;transition:opacity 0.4s;transform:scale(0.5);border-radius:50%}
+  .cat-card:hover{transform:translateY(-8px) scale(1.02);box-shadow:0 20px 60px var(--glow)}
+  .cat-card:hover::before{opacity:0.18}
+  .cat-card:hover::after{opacity:1;transform:scale(1)}
+  .cat-card[data-cat="metals"]{--grad:linear-gradient(135deg,#FFD700,#FFA500);--glow:rgba(255,180,0,0.3)}
+  .cat-card[data-cat="metals"]:hover{border-color:rgba(255,215,0,0.5)}
+  .cat-card[data-cat="rocks"]{--grad:linear-gradient(135deg,#00FFFF,#8B00FF);--glow:rgba(0,200,255,0.3)}
+  .cat-card[data-cat="rocks"]:hover{border-color:rgba(0,255,255,0.5)}
+  .cat-icon{font-size:2.5rem;margin-bottom:0.75rem;display:block}
+  .cat-name{font-family:'Orbitron',monospace;font-size:1.3rem;font-weight:700;letter-spacing:0.1em}
+  .cat-card[data-cat="metals"] .cat-name{color:var(--gold)}
+  .cat-card[data-cat="rocks"] .cat-name{color:var(--cyan)}
+  .cat-desc{font-size:0.85rem;color:rgba(255,255,255,0.5);margin-top:0.5rem;letter-spacing:0.05em}
+  .cat-count{display:inline-block;margin-top:0.75rem;font-size:0.7rem;letter-spacing:0.15em;padding:4px 12px;border-radius:20px;border:1px solid;font-family:'Share Tech Mono',monospace}
+  .cat-card[data-cat="metals"] .cat-count{border-color:rgba(255,215,0,0.3);color:rgba(255,215,0,0.7)}
+  .cat-card[data-cat="rocks"] .cat-count{border-color:rgba(0,255,255,0.3);color:rgba(0,255,255,0.7)}
 
-.photo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem}
-.photo-card{border-radius:20px;overflow:hidden;position:relative;cursor:pointer;aspect-ratio:3/4;border:2px solid var(--pink)}
-.photo-card img{width:100%;height:100%;object-fit:cover;transition:.4s}
-.photo-card:hover img{transform:scale(1.06)}
-.photo-compliment{position:absolute;inset:0;background:linear-gradient(to top,rgba(255,77,125,.85) 0%,transparent 50%);display:flex;align-items:flex-end;padding:1rem;opacity:0;transition:.4s}
-.photo-card:hover .photo-compliment{opacity:1}
-.photo-compliment span{color:#fff;font-size:.85rem;font-weight:600;line-height:1.5;text-shadow:0 1px 4px rgba(0,0,0,.2)}
+  /* COLLECTION PAGE */
+  #collection-page{padding:0;justify-content:flex-start;overflow-y:auto;overflow-x:hidden}
+  .col-header{position:sticky;top:0;width:100%;z-index:100;padding:1rem 1.5rem;background:rgba(0,0,0,0.85);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;gap:1rem;flex-shrink:0}
+  .back-btn{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.15);color:#fff;padding:8px 16px;border-radius:8px;cursor:pointer;font-family:'Rajdhani',sans-serif;font-size:0.85rem;letter-spacing:0.1em;transition:all 0.2s}
+  .back-btn:hover{background:rgba(255,255,255,0.12);border-color:rgba(255,255,255,0.3)}
+  .col-title{font-family:'Orbitron',monospace;font-size:1.3rem;font-weight:700}
+  .col-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1.2rem;padding:1.5rem;width:100%}
 
-.confetti-piece{position:fixed;width:10px;height:10px;border-radius:50%;pointer-events:none;z-index:999;animation:confettiFall linear forwards}
+  /* ITEM CARDS */
+  .item-card{position:relative;border-radius:14px;overflow:hidden;cursor:pointer;aspect-ratio:3/4;
+    border:1px solid rgba(255,255,255,0.08);background:rgba(10,10,20,0.9);
+    transition:transform 0.4s cubic-bezier(.2,1,.3,1),box-shadow 0.4s,border-color 0.3s;
+    transform-style:preserve-3d}
+  .item-card:hover{transform:translateY(-6px) scale(1.02);z-index:10}
+  .item-card-bg{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0.6;transition:opacity 0.3s,transform 0.4s}
+  .item-card:hover .item-card-bg{opacity:0.8;transform:scale(1.05)}
+  .item-card-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.95) 0%,rgba(0,0,0,0.4) 50%,transparent 100%)}
+  .item-card-content{position:absolute;bottom:0;left:0;right:0;padding:1rem}
+  .item-name{font-family:'Orbitron',monospace;font-size:0.85rem;font-weight:700;color:#fff;letter-spacing:0.05em;margin-bottom:0.4rem}
+  .item-formula{font-family:'Share Tech Mono',monospace;font-size:0.65rem;color:rgba(255,255,255,0.4);margin-bottom:0.5rem}
+  .item-tags{display:flex;flex-wrap:wrap;gap:4px}
+  .tag{font-size:0.55rem;letter-spacing:0.08em;padding:2px 7px;border-radius:20px;font-family:'Share Tech Mono',monospace}
+  .tag-rare{background:rgba(255,215,0,0.15);color:var(--gold);border:1px solid rgba(255,215,0,0.25)}
+  .tag-precious{background:rgba(192,192,192,0.12);color:#e0e0e0;border:1px solid rgba(192,192,192,0.2)}
+  .tag-radioactive{background:rgba(0,255,100,0.1);color:#00ff64;border:1px solid rgba(0,255,100,0.2)}
+  .tag-volcanic{background:rgba(255,80,0,0.12);color:#ff6030;border:1px solid rgba(255,80,0,0.25)}
+  .tag-gemstone{background:rgba(138,0,255,0.12);color:#bf7fff;border:1px solid rgba(138,0,255,0.25)}
+  .tag-common{background:rgba(120,120,140,0.12);color:#9090a0;border:1px solid rgba(120,120,140,0.2)}
+  .tag-crystal{background:rgba(0,255,255,0.1);color:var(--cyan);border:1px solid rgba(0,255,255,0.2)}
+  .tag-metamorphic{background:rgba(255,150,0,0.1);color:#ffaa44;border:1px solid rgba(255,150,0,0.2)}
+  .item-glow{position:absolute;inset:0;border-radius:14px;opacity:0;transition:opacity 0.3s;pointer-events:none}
+  .item-card:hover .item-glow{opacity:1}
 
-@keyframes floatY{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
-@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
-@keyframes spin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
-@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-@keyframes floatRandom{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-20px) rotate(10deg)}}
-@keyframes confettiFall{0%{transform:translateY(-20px) rotate(0) scale(1);opacity:1}100%{transform:translateY(110vh) rotate(720deg) scale(.5);opacity:0}}
-@keyframes candleFlicker{0%,100%{transform:scaleY(1) scaleX(1)}50%{transform:scaleY(1.08) scaleX(.92)}}
+  /* DETAIL PAGE */
+  #detail-page{justify-content:flex-start;padding:0;overflow-y:auto}
+  .detail-hero{position:relative;width:100%;height:280px;flex-shrink:0;overflow:hidden}
+  .detail-hero-bg{position:absolute;inset:0;background-size:cover;background-position:center;filter:blur(3px) brightness(0.5)}
+  .detail-hero-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0.3) 0%,rgba(0,0,0,0.95) 100%)}
+  .detail-hero-content{position:absolute;bottom:0;left:0;right:0;padding:2rem}
+  .detail-name{font-family:'Orbitron',monospace;font-size:clamp(1.5rem,5vw,2.5rem);font-weight:900;color:#fff;margin-bottom:0.3rem}
+  .detail-sciname{font-family:'Share Tech Mono',monospace;font-size:0.85rem;color:rgba(255,255,255,0.45);letter-spacing:0.1em;margin-bottom:0.75rem}
+  .detail-body{padding:1.5rem;display:flex;flex-direction:column;gap:1.2rem}
+  .detail-section{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:1.2rem;backdrop-filter:blur(10px)}
+  .detail-section h3{font-family:'Orbitron',monospace;font-size:0.75rem;font-weight:700;letter-spacing:0.2em;color:rgba(255,255,255,0.4);margin-bottom:0.75rem;text-transform:uppercase}
+  .detail-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:0.75rem}
+  .detail-stat{background:rgba(0,0,0,0.3);border-radius:8px;padding:0.75rem;border:1px solid rgba(255,255,255,0.06)}
+  .stat-label{font-size:0.65rem;letter-spacing:0.1em;color:rgba(255,255,255,0.35);font-family:'Share Tech Mono',monospace;margin-bottom:0.25rem}
+  .stat-value{font-size:0.9rem;font-weight:600;color:#fff;font-family:'Orbitron',monospace}
+  .detail-text{font-size:0.9rem;color:rgba(255,255,255,0.7);line-height:1.7}
+  .uses-list{display:flex;flex-wrap:wrap;gap:8px}
+  .use-chip{font-size:0.75rem;padding:5px 12px;border-radius:20px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.8);font-family:'Rajdhani',sans-serif;letter-spacing:0.05em}
+  .rarity-bar{height:8px;border-radius:4px;background:rgba(255,255,255,0.08);margin-top:0.5rem;overflow:hidden}
+  .rarity-fill{height:100%;border-radius:4px;transition:width 1s cubic-bezier(.2,1,.3,1) 0.5s}
+  .rarity-label{display:flex;justify-content:space-between;font-size:0.7rem;color:rgba(255,255,255,0.35);margin-top:0.3rem;font-family:'Share Tech Mono',monospace}
+  .hardness-dots{display:flex;gap:4px;margin-top:0.5rem}
+  .h-dot{width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.15)}
+  .h-dot.filled{background:var(--accent-color,#00ffff)}
+  .fact-box{background:rgba(0,0,0,0.3);border-radius:8px;padding:0.9rem;border-left:3px solid var(--accent-color,#00ffff);font-size:0.85rem;color:rgba(255,255,255,0.7);line-height:1.6;font-style:italic}
+  .detail-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:0.75rem}
+  .chart-bar-wrap{display:flex;flex-direction:column;gap:8px;margin-top:0.5rem}
+  .chart-row{display:flex;align-items:center;gap:8px;font-size:0.7rem;font-family:'Share Tech Mono',monospace;color:rgba(255,255,255,0.5)}
+  .chart-label{width:80px;text-align:right;flex-shrink:0}
+  .chart-track{flex:1;height:6px;background:rgba(255,255,255,0.07);border-radius:3px;overflow:hidden}
+  .chart-fill{height:100%;border-radius:3px;animation:barGrow 1s cubic-bezier(.2,1,.3,1) both}
+  @keyframes barGrow{from{width:0}to{width:var(--w)}}
+  .chart-val{width:35px;flex-shrink:0;font-size:0.6rem}
+  .related-grid{display:flex;gap:8px;flex-wrap:wrap;margin-top:0.5rem}
+  .related-chip{padding:6px 14px;border-radius:20px;font-size:0.75rem;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.7);cursor:pointer;transition:all 0.2s;font-family:'Rajdhani',sans-serif;letter-spacing:0.05em}
+  .related-chip:hover{background:rgba(255,255,255,0.1);border-color:#00ffff;color:#fff}
 
-#burstModal{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;background:rgba(255,200,220,.7);backdrop-filter:blur(6px);opacity:0;pointer-events:none;transition:.6s}
-#burstModal.show{opacity:1;pointer-events:all}
-.burst-card{background:#fff;border-radius:32px;padding:2.5rem 2rem;max-width:380px;width:90%;text-align:center;box-shadow:0 16px 60px rgba(255,77,125,.25);animation:floatY 3s ease-in-out infinite}
-.burst-emoji{font-size:3.5rem;margin-bottom:1rem}
-.burst-title{font-family:'Playfair Display',serif;font-size:1.8rem;color:var(--text);margin-bottom:.8rem}
-.burst-msg{font-size:.95rem;color:var(--muted);line-height:1.8;margin-bottom:1.5rem}
-.burst-close{padding:.6rem 1.8rem;background:linear-gradient(135deg,var(--pink2),var(--pink3));color:#fff;border:none;border-radius:50px;font-size:.9rem;font-family:'Quicksand',sans-serif;font-weight:600;cursor:pointer;transition:.3s}
-.burst-close:hover{transform:scale(1.04)}
+  /* NEBULAE */
+  .nebula{position:absolute;border-radius:50%;filter:blur(80px);opacity:0.15;animation:nebDrift 20s ease-in-out infinite;pointer-events:none}
+  @keyframes nebDrift{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(30px,-20px) scale(1.1)}}
 
-@media(max-width:520px){
-  .cd-grid{gap:.8rem}
-  .cd-box{min-width:72px;padding:.9rem 1rem}
-  .cd-num{font-size:2.2rem}
-  .bday-name{font-size:2rem}
-  .msg-grid{grid-template-columns:1fr}
-  .photo-grid{grid-template-columns:1fr 1fr}
-}
+  /* PARTICLE CANVAS */
+  #particles{position:absolute;inset:0;pointer-events:none;z-index:1}
+
+  /* NAV DOTS */
+  .nav-hint{position:fixed;top:1.2rem;right:1.5rem;display:flex;gap:8px;z-index:200}
+  .nav-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.2);transition:all 0.3s;cursor:pointer}
+  .nav-dot.active{background:#00ffff;box-shadow:0 0 8px #00ffff}
+
+  /* SCROLL INDICATOR */
+  .scroll-hint{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);font-size:0.65rem;letter-spacing:0.3em;color:rgba(255,255,255,0.2);font-family:'Share Tech Mono',monospace;animation:fadeUp 1s ease 6.5s both,blink 2s ease-in-out 7s infinite}
+  @keyframes blink{0%,100%{opacity:0.2}50%{opacity:0.6}}
+
+  /* SCROLLBAR STYLING */
+  ::-webkit-scrollbar{width:4px}
+  ::-webkit-scrollbar-track{background:rgba(255,255,255,0.02)}
+  ::-webkit-scrollbar-thumb{background:rgba(0,255,255,0.2);border-radius:2px}
+  ::-webkit-scrollbar-thumb:hover{background:rgba(0,255,255,0.4)}
+
+  /* MOBILE RESPONSIVE */
+  @media(max-width:600px){
+    .cat-grid{grid-template-columns:1fr;max-width:340px}
+    .col-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+    .detail-grid{grid-template-columns:1fr 1fr}
+  }
 </style>
 </head>
 <body>
+<div id="app">
 
-<canvas id="bgCanvas"></canvas>
-
-<!-- LOCK SCREEN -->
-<div class="screen" id="lockScreen">
-  <div class="lock-hearts">🔒💕🔒</div>
-  <div style="height:1.2rem"></div>
-  <div class="lock-title">Something Special<br>Awaits…</div>
-  <div class="lock-sub">Enter the secret key to peek inside</div>
-  <div class="key-form">
-    <input class="key-input" type="password" id="keyInput" placeholder="••••" maxlength="4">
-    <div class="key-error" id="keyError">Wrong key, try again 🙈</div>
-    <button class="key-btn" onclick="checkKey()">Unlock 🌸</button>
-  </div>
-</div>
-
-<!-- COUNTDOWN SCREEN -->
-<div class="screen hidden" id="countdownScreen">
-  <div class="cd-flower">🌸</div>
-  <div style="height:1rem"></div>
-  <div class="cd-title">Counting down to<br>someone special's day…</div>
-  <div class="cd-names">Harsh 💕 Peehu</div>
-  <div class="cd-grid">
-    <div class="cd-box"><div class="cd-num" id="cdDays">--</div><div class="cd-label">Days</div></div>
-    <div class="cd-box"><div class="cd-num" id="cdHours">--</div><div class="cd-label">Hours</div></div>
-    <div class="cd-box"><div class="cd-num" id="cdMins">--</div><div class="cd-label">Minutes</div></div>
-    <div class="cd-box"><div class="cd-num" id="cdSecs">--</div><div class="cd-label">Seconds</div></div>
-  </div>
-  <div class="cd-message">Every second brings us closer to your most magical birthday yet, Peehu 🌷 Harsh can't wait to celebrate YOU!</div>
-</div>
-
-<!-- BIRTHDAY SCREEN -->
-<div class="screen hidden" id="birthdayScreen">
-  <div class="bday-bg"></div>
-  <div class="bday-content">
-    <div style="font-size:2.5rem;animation:floatY 2s ease-in-out infinite">🎂✨🎉</div>
-    <div class="bday-name">Happy Birthday, Peehu! 🌸</div>
-    <div class="bday-sub">With all the love in Harsh's heart, today is your most magical day ever 💕</div>
-
-    <div class="tab-row">
-      <button class="tab-btn active" onclick="showPanel('cake',this)">🎂 Cut Cake</button>
-      <button class="tab-btn" onclick="showPanel('messages',this)">💌 Messages</button>
-      <button class="tab-btn" onclick="showPanel('photos',this)">📸 Our Photos</button>
+  <!-- WATERMARK -->
+  <div id="watermark">
+    <div class="wm-lines"><div class="wm-scanline"></div></div>
+    <div style="text-align:center">
+      <div class="wm-text">HARSH</div>
+      <div class="wm-sub">◆ COSMIC COLLECTION ◆</div>
     </div>
+  </div>
 
-    <!-- CAKE PANEL -->
-    <div class="panel active" id="panel-cake">
-      <div class="cake-wrap">
-        <div class="cake-svg-wrap" id="cakeSvg" onclick="cutCake()">
-          <svg width="220" height="240" viewBox="0 0 220 240">
-            <ellipse cx="110" cy="200" rx="90" ry="14" fill="#f9c6da"/>
-            <rect x="30" y="120" width="160" height="80" rx="8" fill="#ff85a1"/>
-            <rect x="30" y="120" width="160" height="20" rx="0" fill="#ffb3c6"/>
-            <path d="M45 120 Q55 108 65 120 Q75 108 85 120 Q95 108 105 120 Q115 108 125 120 Q135 108 145 120 Q155 108 165 120 Q175 108 185 120" stroke="white" stroke-width="4" fill="none" opacity=".7"/>
-            <rect x="45" y="70" width="130" height="55" rx="8" fill="#ff4d7d"/>
-            <rect x="45" y="70" width="130" height="18" rx="0" fill="#ff85a1"/>
-            <rect x="60" y="30" width="100" height="45" rx="8" fill="#e83568"/>
-            <rect x="60" y="30" width="100" height="16" rx="0" fill="#ff4d7d"/>
-            <rect x="80" y="8" width="8" height="26" rx="4" fill="#ffd700"/>
-            <rect x="103" y="4" width="8" height="30" rx="4" fill="#ff85a1"/>
-            <rect x="126" y="8" width="8" height="26" rx="4" fill="#a8edea"/>
-            <ellipse cx="84" cy="7" rx="5" ry="7" fill="#ffa500" id="fl1" style="animation:candleFlicker 1s ease-in-out infinite"/>
-            <ellipse cx="107" cy="3" rx="5" ry="7" fill="#ff6b35" id="fl2" style="animation:candleFlicker 1.2s ease-in-out infinite"/>
-            <ellipse cx="130" cy="7" rx="5" ry="7" fill="#ffd700" id="fl3" style="animation:candleFlicker .9s ease-in-out infinite"/>
-            <text x="55" y="105" font-size="10" fill="white" opacity=".8">✦</text>
-            <text x="150" y="105" font-size="10" fill="white" opacity=".8">✦</text>
-            <text x="75" y="58" font-size="8" fill="white" opacity=".7">♡</text>
-            <text x="138" y="60" font-size="8" fill="white" opacity=".7">♡</text>
-          </svg>
-        </div>
-        <div class="cake-hint">Tap the cake to cut it! 🎉</div>
-        <button class="cake-btn" onclick="cutCake()">🎂 Cut the Cake!</button>
+  <!-- NEBULAE BACKGROUND -->
+  <div class="nebula" style="width:600px;height:600px;top:-100px;left:-150px;background:radial-gradient(circle,rgba(0,100,255,0.4),transparent);animation-duration:25s"></div>
+  <div class="nebula" style="width:500px;height:500px;bottom:-100px;right:-100px;background:radial-gradient(circle,rgba(138,0,255,0.35),transparent);animation-duration:18s;animation-delay:-8s"></div>
+  <div class="nebula" style="width:400px;height:400px;top:30%;left:30%;background:radial-gradient(circle,rgba(255,80,0,0.15),transparent);animation-duration:22s;animation-delay:-4s"></div>
+
+  <canvas id="starfield"></canvas>
+  <canvas id="particles"></canvas>
+
+  <!-- CUSTOM CURSOR -->
+  <div id="cursor"></div>
+  <div id="cursor-ring"></div>
+
+  <!-- NAV DOTS -->
+  <div class="nav-hint">
+    <div class="nav-dot active" id="dot0"></div>
+    <div class="nav-dot" id="dot1"></div>
+    <div class="nav-dot" id="dot2"></div>
+  </div>
+
+  <!-- INTRO PAGE -->
+  <div class="page" id="intro-page">
+    <div class="cosmic-title">Metals &amp; Rocks Universe</div>
+    <div class="cosmic-sub">EXPLORE THE HIDDEN POWER OF EARTH</div>
+    <div class="cosmic-line"></div>
+    <div class="cat-grid">
+      <div class="cat-card" data-cat="metals" onclick="showCollection('metals')">
+        <div class="cat-icon">⚙</div>
+        <div class="cat-name">METALS</div>
+        <div class="cat-desc">From gold to uranium — the elements that built civilization</div>
+        <div class="cat-count">12 ELEMENTS</div>
+      </div>
+      <div class="cat-card" data-cat="rocks" onclick="showCollection('rocks')">
+        <div class="cat-icon">💠</div>
+        <div class="cat-name">ROCKS &amp; GEMS</div>
+        <div class="cat-desc">Ancient minerals forged by volcanic fury and cosmic time</div>
+        <div class="cat-count">10 SPECIMENS</div>
       </div>
     </div>
+    <div class="scroll-hint">▼ SELECT A CATEGORY TO EXPLORE</div>
+  </div>
 
-    <!-- MESSAGES PANEL -->
-    <div class="panel" id="panel-messages">
-      <div class="msg-grid">
-        <div class="msg-card" data-emoji="💖">
-          <p>"You are the reason I smile every morning. Your eyes hold an entire universe, and I'm lucky to be part of it."</p>
-          <div class="msg-from">— Harsh, always yours</div>
-        </div>
-        <div class="msg-card" data-emoji="🌸">
-          <p>"Peehu, every laugh we share becomes my favourite memory. You make ordinary days feel like magic."</p>
-          <div class="msg-from">— With all my heart</div>
-        </div>
-        <div class="msg-card" data-emoji="🌙">
-          <p>"When the world gets loud, the thought of you is the quiet that calms me. You're my home, Peehu."</p>
-          <div class="msg-from">— Harsh 💕</div>
-        </div>
-        <div class="msg-card" data-emoji="✨">
-          <p>"I fall more in love with you every single day. Happy birthday to the girl who stole my whole heart."</p>
-          <div class="msg-from">— Forever yours</div>
-        </div>
-        <div class="msg-card" data-emoji="🦋">
-          <p>"You are beautiful in ways that words can barely hold. Your smile is my sunshine, always."</p>
-          <div class="msg-from">— Harsh 🌷</div>
-        </div>
-        <div class="msg-card" data-emoji="🎀">
-          <p>"May this birthday bring you all the joy you've given me — and that's an infinite amount, my darling."</p>
-          <div class="msg-from">— Lovingly, Harsh</div>
-        </div>
+  <!-- COLLECTION PAGE -->
+  <div class="page hidden" id="collection-page">
+    <div class="col-header">
+      <button class="back-btn" onclick="goBack('intro')">← BACK</button>
+      <div class="col-title" id="col-title">METALS</div>
+    </div>
+    <div class="col-grid" id="col-grid"></div>
+  </div>
+
+  <!-- DETAIL PAGE -->
+  <div class="page hidden" id="detail-page">
+    <div class="detail-hero" id="detail-hero">
+      <div class="detail-hero-bg" id="detail-hero-bg"></div>
+      <div class="detail-hero-overlay"></div>
+      <div class="detail-hero-content">
+        <button class="back-btn" id="detail-back">← COLLECTION</button>
+        <div style="height:0.75rem"></div>
+        <div class="detail-name" id="detail-name"></div>
+        <div class="detail-sciname" id="detail-sciname"></div>
+        <div class="detail-tags" id="detail-tags"></div>
       </div>
     </div>
-
-    <!-- PHOTOS PANEL -->
-    <div class="panel" id="panel-photos">
-      <div class="photo-grid">
-        <div class="photo-card">
-          <img src="https://i.ibb.co/9kF9sGCK/IMG-20260525-202317.jpg" alt="Peehu" loading="lazy">
-          <div class="photo-compliment"><span>You're absolutely radiant here, Peehu 🌸</span></div>
-        </div>
-        <div class="photo-card">
-          <img src="https://i.ibb.co/Ld3HvJYh/IMG-20260525-202330.jpg" alt="Peehu" loading="lazy">
-          <div class="photo-compliment"><span>That smile lights up every room you walk into ✨</span></div>
-        </div>
-        <div class="photo-card">
-          <img src="https://i.ibb.co/3mj4hkt7/IMG-20260525-211916.jpg" alt="Peehu" loading="lazy">
-          <div class="photo-compliment"><span>So naturally beautiful, Harsh is so lucky 💕</span></div>
-        </div>
-        <div class="photo-card">
-          <img src="https://i.ibb.co/GQRGtr65/IMG-20260525-212027.jpg" alt="Peehu" loading="lazy">
-          <div class="photo-compliment"><span>This moment is pure magic — just like you 🦋</span></div>
-        </div>
-        <div class="photo-card">
-          <img src="https://i.ibb.co/vCdqfw70/IMG-20260525-212052.jpg" alt="Peehu" loading="lazy">
-          <div class="photo-compliment"><span>Your beauty is timeless, inside and out 🌷</span></div>
-        </div>
-      </div>
-    </div>
-
+    <div class="detail-body" id="detail-body"></div>
   </div>
-</div>
 
-<!-- BURST MODAL -->
-<div id="burstModal">
-  <div class="burst-card">
-    <div class="burst-emoji" id="burstEmoji">🎂</div>
-    <div class="burst-title" id="burstTitle">Happy Birthday!</div>
-    <div class="burst-msg" id="burstMsg">You are so loved!</div>
-    <button class="burst-close" onclick="closeBurst()">Thank you! 💕</button>
-  </div>
 </div>
 
 <script>
-const SECRET = '2626';
-const BIRTHDAY = new Date('2026-05-26T00:00:00');
-
-const cakeSurprises = [
-  {emoji:'🎉',title:'Happy Birthday, Peehu!',msg:'The universe chose today to bless us with you. Harsh loves you more than all the stars in the sky. Make a wish!'},
-  {emoji:'🌸',title:'You Are So Beautiful!',msg:'Every single photo of you is proof that magic is real. Your smile, your eyes, your laugh — everything about you is perfect.'},
-  {emoji:'💖',title:'Harsh loves you!',msg:'From the very first moment, you became my favourite person on this whole earth. Happy birthday, my love!'},
-  {emoji:'🦋',title:'This Year is Yours!',msg:'May this birthday be the start of your most magical chapter yet. With Harsh by your side, nothing is impossible!'},
-  {emoji:'✨',title:'You Light Up My World!',msg:'In every lifetime, in every universe, I would always find you and fall in love with you again. Happy birthday, Peehu!'},
+const METALS = [
+  {id:'gold',name:'Gold',sci:'Aurum (Au)',formula:'Au',color:'#FFD700',emoji:'✦',
+   tags:['rare','precious'],gradient:'linear-gradient(135deg,#8B6914,#FFD700,#FFA500)',
+   bg:'linear-gradient(135deg,#1a1200,#3d2e00,#6b4f00)',
+   hardness:2.5,rarity:98,
+   composition:'Pure elemental gold, atomic number 79',
+   origin:'Formed in neutron star collisions; found in veins, alluvial deposits, and sea water',
+   physical:'Yellow lustrous metal, extremely malleable, ductile, dense (19.3 g/cm³), excellent conductor',
+   crystal:'Cubic (face-centered)',
+   uses:['Jewelry','Electronics','Dentistry','Aerospace','Currency','Medicine'],
+   history:'Used since 4000 BC in Egypt; powered early economies; backed global currencies until 1971',
+   facts:'All gold ever mined fits in a 22-meter cube. Gold is edible and non-toxic. One ounce can be stretched into 80km of wire.',
+   related:['Silver','Platinum','Electrum'],
+   properties:[{label:'Density',val:'19.3 g/cm³',pct:95},{label:'Conductivity',val:'High',pct:82},{label:'Melting Pt',val:'1064°C',pct:45}]},
+  {id:'silver',name:'Silver',sci:'Argentum (Ag)',formula:'Ag',color:'#C0C0C0',emoji:'◈',
+   tags:['precious','common'],gradient:'linear-gradient(135deg,#666,#C0C0C0,#fff)',
+   bg:'linear-gradient(135deg,#0a0a12,#1a1a2e,#2d2d44)',
+   hardness:2.5,rarity:75,
+   composition:'Pure elemental silver, atomic number 47',
+   origin:'Found in Earth\'s crust in veins, often with lead and copper ores',
+   physical:'White lustrous metal, highest electrical and thermal conductivity of all metals, density 10.5 g/cm³',
+   crystal:'Cubic (face-centered)',
+   uses:['Photography','Electronics','Solar panels','Antibacterial','Jewelry','Mirrors'],
+   history:'Used since 3000 BC; ancient Greeks stored water in silver vessels to prevent contamination',
+   facts:'Silver has the highest electrical conductivity of any element. It was once more valuable than gold in ancient Egypt.',
+   related:['Gold','Platinum','Copper'],
+   properties:[{label:'Density',val:'10.5 g/cm³',pct:52},{label:'Conductivity',val:'Highest',pct:100},{label:'Melting Pt',val:'962°C',pct:40}]},
+  {id:'platinum',name:'Platinum',sci:'Platinum (Pt)',formula:'Pt',color:'#E5E4E2',emoji:'⬡',
+   tags:['rare','precious'],gradient:'linear-gradient(135deg,#6e6e6e,#d5d5d5,#fff)',
+   bg:'linear-gradient(135deg,#0f0f1a,#1a1a30,#252540)',
+   hardness:4,rarity:99,
+   composition:'Pure elemental platinum, atomic number 78',
+   origin:'Ultra-rare; found in South Africa, Russia; often from meteorites',
+   physical:'Silvery-white, extremely dense (21.4 g/cm³), highly resistant to corrosion, catalytic',
+   crystal:'Cubic (face-centered)',
+   uses:['Catalytic converters','Jewelry','Cancer drugs','Fuel cells','Laboratory equipment'],
+   history:'Named from Spanish "platina" (little silver); dismissed as fake silver before recognition in 18th century',
+   facts:'All platinum ever mined would fill a living room. It\'s 30x rarer than gold. Platinum is biocompatible with the human body.',
+   related:['Gold','Palladium','Iridium'],
+   properties:[{label:'Density',val:'21.4 g/cm³',pct:100},{label:'Melting Pt',val:'1768°C',pct:74},{label:'Corrosion Resist',val:'Max',pct:100}]},
+  {id:'iron',name:'Iron',sci:'Ferrum (Fe)',formula:'Fe',color:'#8C8C8C',emoji:'⬟',
+   tags:['common'],gradient:'linear-gradient(135deg,#333,#666,#999)',
+   bg:'linear-gradient(135deg,#0d0d0d,#1a1200,#2a2000)',
+   hardness:4,rarity:30,
+   composition:'Elemental iron, atomic number 26; forms steel with carbon',
+   origin:'4th most abundant element on Earth; core of Earth is solid iron-nickel',
+   physical:'Silvery-gray metal, strongly magnetic, density 7.87 g/cm³, prone to oxidation (rust)',
+   crystal:'Body-centered cubic',
+   uses:['Steel production','Construction','Manufacturing','Magnets','Blood hemoglobin'],
+   history:'Iron Age began 1200 BC; transformed warfare, agriculture, and civilization globally',
+   facts:'Earth\'s core is mostly iron — it\'s why we have a magnetic field protecting us from solar wind. Your blood owes its red color to iron.',
+   related:['Steel','Cobalt','Nickel'],
+   properties:[{label:'Density',val:'7.87 g/cm³',pct:38},{label:'Hardness',val:'Mohs 4',pct:40},{label:'Abundance',val:'Very High',pct:95}]},
+  {id:'copper',name:'Copper',sci:'Cuprum (Cu)',formula:'Cu',color:'#B87333',emoji:'◉',
+   tags:['common','precious'],gradient:'linear-gradient(135deg,#7a3a00,#B87333,#f5a052)',
+   bg:'linear-gradient(135deg,#120800,#2a1500,#3d2200)',
+   hardness:3,rarity:45,
+   composition:'Pure elemental copper, atomic number 29',
+   origin:'Native copper found in Michigan; also mined from chalcopyrite, malachite deposits',
+   physical:'Reddish-brown, excellent conductor, density 8.96 g/cm³, antimicrobial surface properties',
+   crystal:'Cubic (face-centered)',
+   uses:['Electrical wiring','Plumbing','Coins','Electronics','Roofing','Alloys (bronze, brass)'],
+   history:'Oldest metal used by humans (10,000 BC); Bronze Age named for copper-tin alloy',
+   facts:'Copper is the only metal naturally occurring in significant native form. Hospitals use copper surfaces to kill bacteria. The Statue of Liberty is copper.',
+   related:['Bronze','Brass','Gold'],
+   properties:[{label:'Conductivity',val:'Very High',pct:97},{label:'Density',val:'8.96 g/cm³',pct:44},{label:'Melting Pt',val:'1085°C',pct:45}]},
+  {id:'titanium',name:'Titanium',sci:'Titanium (Ti)',formula:'Ti',color:'#878681',emoji:'⬠',
+   tags:['rare','precious'],gradient:'linear-gradient(135deg,#3a3a3a,#7a7a7a,#b0b0b0)',
+   bg:'linear-gradient(135deg,#080810,#10102a,#181840)',
+   hardness:6,rarity:70,
+   composition:'Elemental titanium, atomic number 22; strongest-to-weight ratio metal',
+   origin:'9th most abundant element; found in ilmenite and rutile mineral deposits',
+   physical:'Silvery-gray, low density (4.5 g/cm³), highest strength-to-weight ratio, corrosion-resistant',
+   crystal:'Hexagonal close-packed',
+   uses:['Aerospace','Medical implants','Sports equipment','Military armor','Jewelry'],
+   history:'Discovered 1791; named after the Titans of Greek mythology; major industrial use since 1950s',
+   facts:'Titanium is as strong as steel but 45% lighter. It\'s biocompatible — your body can\'t tell it\'s foreign. The SR-71 Blackbird was 85% titanium.',
+   related:['Aluminum','Steel','Zirconium'],
+   properties:[{label:'Density',val:'4.5 g/cm³',pct:22},{label:'Strength',val:'Max Class',pct:90},{label:'Corrosion',val:'Immune',pct:99}]},
+  {id:'uranium',name:'Uranium',sci:'Uranium (U)',formula:'U',color:'#00ff64',emoji:'☢',
+   tags:['radioactive','rare'],gradient:'linear-gradient(135deg,#003300,#006600,#00cc00)',
+   bg:'linear-gradient(135deg,#001a00,#003300,#004400)',
+   hardness:6,rarity:88,
+   composition:'Radioactive actinide, atomic number 92; naturally fissile isotope U-235',
+   origin:'Found in uraninite (pitchblende); produced in supernovae explosions',
+   physical:'Silvery-gray, weakly radioactive, extremely dense (19.1 g/cm³), pyrophoric in powder form',
+   crystal:'Orthorhombic',
+   uses:['Nuclear power (3% of world energy)','Nuclear weapons','X-ray targets','Counterweights'],
+   history:'Discovered 1789; first nuclear reactor 1942 (Manhattan Project); Hiroshima bomb 1945',
+   facts:'1kg of uranium-235 can release energy equivalent to 3,000 tons of coal. Natural uranium is only mildly radioactive — less than granite.',
+   related:['Plutonium','Thorium','Radium'],
+   properties:[{label:'Density',val:'19.1 g/cm³',pct:94},{label:'Radioactivity',val:'Alpha+Gamma',pct:88},{label:'Half-life',val:'4.5B yr',pct:100}]},
+  {id:'mercury',name:'Mercury',sci:'Hydrargyrum (Hg)',formula:'Hg',color:'#9E9E9E',emoji:'◎',
+   tags:['rare','radioactive'],gradient:'linear-gradient(135deg,#404040,#909090,#d0d0d0)',
+   bg:'linear-gradient(135deg,#100010,#200020,#2d002d)',
+   hardness:1,rarity:80,
+   composition:'Liquid metal at room temperature, atomic number 80; extremely toxic',
+   origin:'Found in cinnabar (HgS) deposits; volcanic regions, Spain, China, California',
+   physical:'Only metal liquid at room temp, extremely dense (13.5 g/cm³), high surface tension, toxic vapor',
+   crystal:'Rhombohedral (solid)',
+   uses:['Thermometers (historical)','Fluorescent lamps','Dental amalgams (phased out)','Scientific instruments'],
+   history:'Known since ancient times; used in gilding, mirrors, and alchemy; "quicksilver" in medieval texts',
+   facts:'Mercury can dissolve gold, forming an amalgam. In ancient China, rivers of mercury were found in emperor tombs. It\'s named after the planet.',
+   related:['Gold','Lead','Thallium'],
+   properties:[{label:'Density',val:'13.5 g/cm³',pct:66},{label:'Toxicity',val:'Extreme',pct:95},{label:'Boiling Pt',val:'357°C',pct:15}]},
+  {id:'aluminium',name:'Aluminium',sci:'Aluminium (Al)',formula:'Al',color:'#A8A9AD',emoji:'▣',
+   tags:['common'],gradient:'linear-gradient(135deg,#505050,#a0a0a0,#e0e0e0)',
+   bg:'linear-gradient(135deg,#0a0a0a,#151515,#1f1f2a)',
+   hardness:2.5,rarity:20,
+   composition:'Most abundant metal in Earth\'s crust, atomic number 13',
+   origin:'Found in bauxite ore; 3rd most abundant element in Earth\'s crust',
+   physical:'Silvery-white, very lightweight (2.7 g/cm³), excellent conductor, naturally oxide-coated',
+   crystal:'Cubic (face-centered)',
+   uses:['Packaging','Aircraft','Automotive','Construction','Electrical cables','Cookware'],
+   history:'Once more valuable than gold (1800s); Napoleon used aluminum cutlery for special guests',
+   facts:'Aluminum was once literally worth more than gold. The capstone of the Washington Monument is aluminum. Recycling saves 95% of production energy.',
+   related:['Magnesium','Titanium','Scandium'],
+   properties:[{label:'Density',val:'2.7 g/cm³',pct:13},{label:'Abundance',val:'8% of crust',pct:85},{label:'Conductivity',val:'High',pct:74}]},
+  {id:'lithium',name:'Lithium',sci:'Lithium (Li)',formula:'Li',color:'#CC44FF',emoji:'◈',
+   tags:['rare'],gradient:'linear-gradient(135deg,#330066,#8800ff,#cc44ff)',
+   bg:'linear-gradient(135deg,#0a0015,#15002a,#200040)',
+   hardness:0.6,rarity:72,
+   composition:'Lightest metal, alkali metal, atomic number 3; incredibly reactive',
+   origin:'Found in brine deposits, pegmatite rocks; Chile has 54% of global reserves',
+   physical:'Soft silvery metal, lightest solid element (0.53 g/cm³), floats on water, reacts violently with moisture',
+   crystal:'Body-centered cubic',
+   uses:['EV batteries','Grid storage','Smartphones','Psychiatric medication','Lubricants','Nuclear reactors'],
+   history:'Discovered 1817; revolutionized psychiatry (treats bipolar disorder); now driving the EV revolution',
+   facts:'Lithium powers your phone, your EV, and possibly your mental health. The Big Bang created all lithium in the universe. It burns crimson red.',
+   related:['Sodium','Cobalt','Nickel'],
+   properties:[{label:'Density',val:'0.53 g/cm³',pct:3},{label:'Reactivity',val:'Extreme',pct:96},{label:'Demand Growth',val:'+300%',pct:88}]},
+  {id:'cobalt',name:'Cobalt',sci:'Cobaltum (Co)',formula:'Co',color:'#0047AB',emoji:'◆',
+   tags:['rare'],gradient:'linear-gradient(135deg,#002266,#0047AB,#1a78ff)',
+   bg:'linear-gradient(135deg,#000a1a,#001530,#002040)',
+   hardness:5,rarity:78,
+   composition:'Transition metal, atomic number 27; ferromagnetic, radioactive isotopes exist',
+   origin:'Found in cobaltite, erythrite; DRC holds 70% of world reserves',
+   physical:'Hard, lustrous, bluish-gray metal, density 8.9 g/cm³, high melting point, strongly magnetic',
+   crystal:'Hexagonal',
+   uses:['EV batteries (LCO)','Superalloys (jet engines)','Blue pigment','Medical imaging','Cancer treatment'],
+   history:'Used since 2500 BC for blue glass; name from German "Kobold" (goblin) as miners blamed it for accidents',
+   facts:'Cobalt-60 is used in cancer radiation therapy. Ancient Egyptian blue glass owed its color to cobalt.',
+   related:['Nickel','Iron','Lithium'],
+   properties:[{label:'Density',val:'8.9 g/cm³',pct:43},{label:'Magnetism',val:'Ferromagnetic',pct:80},{label:'Melting Pt',val:'1495°C',pct:62}]},
+  {id:'chromium',name:'Chromium',sci:'Chromium (Cr)',formula:'Cr',color:'#4DC6FF',emoji:'◉',
+   tags:['common'],gradient:'linear-gradient(135deg,#005577,#4DC6FF,#a0e8ff)',
+   bg:'linear-gradient(135deg,#000a10,#001520,#002030)',
+   hardness:8.5,rarity:55,
+   composition:'Transition metal, atomic number 24; named from Greek "chroma" (color)',
+   origin:'Found in chromite ore; South Africa, Kazakhstan, India are top producers',
+   physical:'Steel-gray, lustrous, extremely hard, density 7.19 g/cm³, forms protective oxide layer',
+   crystal:'Body-centered cubic',
+   uses:['Stainless steel (10-20%)','Chrome plating','Pigments','Tanning leather','Catalysts'],
+   history:'Discovered 1797; gave us stainless steel and the chrome sheen of classic cars',
+   facts:'Chromium is the hardest elemental metal. Emeralds and rubies owe their color to trace chromium.',
+   related:['Iron','Steel','Vanadium'],
+   properties:[{label:'Hardness',val:'Mohs 8.5',pct:85},{label:'Density',val:'7.19 g/cm³',pct:35},{label:'Corrosion Resist',val:'Very High',pct:88}]}
 ];
 
-let cakeClickIdx = 0;
-let cakeCut = false;
+const ROCKS = [
+  {id:'diamond',name:'Diamond',sci:'Carbon (C) — cubic form',formula:'C',color:'#B9F2FF',emoji:'💎',
+   tags:['rare','precious','crystal'],gradient:'linear-gradient(135deg,#b0e0ff,#ffffff,#b0f0ff)',
+   bg:'linear-gradient(135deg,#000a1a,#001530,#00202a)',
+   hardness:10,rarity:99,
+   composition:'Pure carbon in cubic crystal structure; sp³ hybridized bonds',
+   origin:'Formed 100+ miles underground at extreme pressure/temp; brought up by kimberlite volcanic pipes',
+   physical:'Hardest natural substance (Mohs 10), extremely high refractive index (2.42), thermal conductor',
+   crystal:'Cubic',
+   uses:['Jewelry','Industrial cutting','Quantum computing','Semiconductor research','Medical lasers'],
+   history:'Coveted since ancient India; De Beers monopoly shaped modern diamond market',
+   facts:'Diamonds can be scratched by nothing on Earth — only by other diamonds. Neptune may rain diamonds.',
+   related:['Graphite','Moissanite','Quartz'],
+   properties:[{label:'Hardness',val:'Mohs 10',pct:100},{label:'Refractive Idx',val:'2.42',pct:99},{label:'Thermal Cond.',val:'Max',pct:100}]},
+  {id:'quartz',name:'Quartz',sci:'Silicon dioxide (SiO₂)',formula:'SiO₂',color:'#FFFFFF',emoji:'◈',
+   tags:['common','crystal'],gradient:'linear-gradient(135deg,#aaaabb,#ddddee,#ffffff)',
+   bg:'linear-gradient(135deg,#0a0a10,#151520,#1a1a28)',
+   hardness:7,rarity:15,
+   composition:'Silicon dioxide crystal; most abundant mineral on Earth\'s surface',
+   origin:'Found in igneous, metamorphic, and sedimentary rocks worldwide',
+   physical:'Clear to white, hexagonal crystals, piezoelectric, hardness 7, refractive index 1.55',
+   crystal:'Trigonal',
+   uses:['Electronics (oscillators)','Glass production','Optics','Gemstones','Watches','Sandpaper'],
+   history:'Used for tools since prehistory; quartz crystal oscillators enabled the digital revolution',
+   facts:'Every grain of sand on most beaches is quartz. Quartz powers your watch via piezoelectric vibrations.',
+   related:['Amethyst','Citrine','Chalcedony'],
+   properties:[{label:'Hardness',val:'Mohs 7',pct:70},{label:'Abundance',val:'12% of crust',pct:90},{label:'Piezoelectric',val:'Yes',pct:100}]},
+  {id:'obsidian',name:'Obsidian',sci:'Volcanic glass (SiO₂-rich)',formula:'SiO₂+',color:'#1a1a2e',emoji:'◼',
+   tags:['volcanic','crystal'],gradient:'linear-gradient(135deg,#000,#1a1a2e,#2d0040)',
+   bg:'linear-gradient(135deg,#050005,#0d000d,#150015)',
+   hardness:5.5,rarity:40,
+   composition:'Amorphous volcanic glass; rapid cooling lava, no crystal structure',
+   origin:'Forms when silica-rich lava cools too quickly for crystal growth; Ring of Fire regions',
+   physical:'Glassy luster, conchoidal fracture, extremely sharp edges, black (iron/magnesium)',
+   crystal:'Amorphous (no crystal)',
+   uses:['Ancient tools/weapons','Surgical scalpels (modern)','Jewelry','Arrows','Ritual objects'],
+   history:'Used by prehistoric humans 700,000 years ago; traded across continents in Neolithic times',
+   facts:'Obsidian scalpels are sharper than surgical steel. Aztecs used obsidian mirrors for divination.',
+   related:['Pumice','Rhyolite','Basalt'],
+   properties:[{label:'Hardness',val:'Mohs 5.5',pct:55},{label:'Sharpness',val:'Sub-nm edge',pct:100},{label:'Cutting Quality',val:'Ultra-fine',pct:98}]},
+  {id:'ruby',name:'Ruby',sci:'Corundum (Al₂O₃) + Cr',formula:'Al₂O₃:Cr',color:'#FF003C',emoji:'♦',
+   tags:['rare','precious','gemstone'],gradient:'linear-gradient(135deg,#500010,#FF003C,#ff6080)',
+   bg:'linear-gradient(135deg,#120006,#25000d,#350014)',
+   hardness:9,rarity:95,
+   composition:'Chromium-doped aluminum oxide; red color from Cr³⁺ ions absorbing blue-green light',
+   origin:'Myanmar produces world\'s finest (Mogok Valley); also Thailand, Madagascar, Vietnam',
+   physical:'Deep red, hardness 9, refractive index 1.77, pleochroic, fluorescent under UV',
+   crystal:'Trigonal',
+   uses:['Gemstones','Laser technology (first laser used ruby)','Bearings in watches','Medical instruments'],
+   history:'Prized above all gems in ancient India; Sanskrit "ratnaraj" = king of gems',
+   facts:'The first laser ever fired used a ruby crystal in 1960. Burma rubies glow brighter under UV.',
+   related:['Sapphire','Emerald','Spinel'],
+   properties:[{label:'Hardness',val:'Mohs 9',pct:90},{label:'Rarity',val:'Extreme',pct:95},{label:'Fluorescence',val:'Strong',pct:88}]},
+  {id:'sapphire',name:'Sapphire',sci:'Corundum (Al₂O₃) + Fe/Ti',formula:'Al₂O₃:Fe,Ti',color:'#0F52BA',emoji:'◆',
+   tags:['rare','precious','gemstone'],gradient:'linear-gradient(135deg,#001540,#0F52BA,#4488ff)',
+   bg:'linear-gradient(135deg,#000510,#000a1a,#00102a)',
+   hardness:9,rarity:90,
+   composition:'Iron and titanium-doped corundum; blue from intervalence charge transfer Fe²⁺/Ti⁴⁺',
+   origin:'Kashmir (finest), Sri Lanka, Madagascar, Australia, Montana',
+   physical:'Blue (classic), but can be any color except red; hardness 9, excellent transparency',
+   crystal:'Trigonal',
+   uses:['Gemstones','Apple Watch screens','Scientific windows','Semiconductors','Bullet-resistant glass'],
+   history:'Worn by ancient Persians to color the sky blue; Princess Diana\'s engagement ring is a Ceylon sapphire',
+   facts:'Your iPhone camera lens is sapphire glass. Star sapphires show a 6-pointed star from rutile needles.',
+   related:['Ruby','Alexandrite','Aquamarine'],
+   properties:[{label:'Hardness',val:'Mohs 9',pct:90},{label:'Transparency',val:'Optical grade',pct:95},{label:'Toughness',val:'Very High',pct:85}]},
+  {id:'emerald',name:'Emerald',sci:'Beryl (Be₃Al₂Si₆O₁₈) + Cr',formula:'Be₃Al₂Si₆O₁₈:Cr',color:'#50C878',emoji:'◈',
+   tags:['rare','precious','gemstone'],gradient:'linear-gradient(135deg,#003320,#50C878,#80ff99)',
+   bg:'linear-gradient(135deg,#001008,#002010,#003018)',
+   hardness:7.5,rarity:90,
+   composition:'Chromium/vanadium-bearing beryl; vivid green from Cr replacing Al in structure',
+   origin:'Colombia produces 70-90% of world supply; also Zambia, Brazil, Zimbabwe',
+   physical:'Vivid green, hardness 7.5; most emeralds have inclusions called "jardins" (gardens)',
+   crystal:'Hexagonal',
+   uses:['Gemstones','Meditation/healing (folk)','Luxury watches','Collector specimens'],
+   history:'Cleopatra was obsessed with emeralds; Aztec and Inca civilizations revered them',
+   facts:'Emerald inclusions (jardins) are considered beautiful. A flawless emerald is rarer than diamond.',
+   related:['Aquamarine','Morganite','Heliodor'],
+   properties:[{label:'Color Intensity',val:'Maximum',pct:100},{label:'Inclusions',val:'Common',pct:70},{label:'Rarity',val:'Very High',pct:90}]},
+  {id:'amethyst',name:'Amethyst',sci:'Quartz (SiO₂) + iron',formula:'SiO₂:Fe',color:'#9B59B6',emoji:'◈',
+   tags:['crystal','gemstone'],gradient:'linear-gradient(135deg,#2d0066,#9B59B6,#cc88ff)',
+   bg:'linear-gradient(135deg,#0a0015,#15002a,#1f0040)',
+   hardness:7,rarity:55,
+   composition:'Purple variety of quartz; iron impurities and irradiation create violet color',
+   origin:'Brazil (world\'s largest producer), Uruguay, Zambia, South Korea, Madagascar',
+   physical:'Violet to purple, hardness 7, hexagonal crystals, pleochroic, transparent to translucent',
+   crystal:'Trigonal',
+   uses:['Gemstones','Jewelry','Meditation tools','Collector specimens'],
+   history:'Ancient Greeks believed it prevented intoxication; medieval European bishops wore amethyst',
+   facts:'Amethyst turns yellow (citrine) when heated. The Vatican\'s papal ring is traditionally amethyst.',
+   related:['Citrine','Quartz','Ametrine'],
+   properties:[{label:'Hardness',val:'Mohs 7',pct:70},{label:'Availability',val:'Moderate',pct:55},{label:'Color Depth',val:'Variable',pct:75}]},
+  {id:'granite',name:'Granite',sci:'Felsic intrusive rock',formula:'SiO₂+Al₂O₃+KAlSi₃O₈',color:'#808080',emoji:'⬡',
+   tags:['common'],gradient:'linear-gradient(135deg,#3a3a3a,#808080,#c0c0c0)',
+   bg:'linear-gradient(135deg,#0d0d0d,#1a1a1a,#242424)',
+   hardness:7,rarity:10,
+   composition:'Coarse-grained igneous rock; quartz + feldspar + mica; ~72% SiO₂',
+   origin:'Forms deep underground from slowly cooling magma; exposed by erosion over millions of years',
+   physical:'Speckled gray-pink-black, very hard, coarse texture, density 2.7 g/cm³, naturally slightly radioactive',
+   crystal:'Interlocking crystals',
+   uses:['Building material','Countertops','Monuments','Gravestones','Paving'],
+   history:'Egyptians quarried granite for obelisks and sarcophagi; Stonehenge includes granite',
+   facts:'Granite is naturally radioactive. El Capitan (Yosemite) is a solid granite monolith. Granite forms the basement of continents.',
+   related:['Rhyolite','Gneiss','Diorite'],
+   properties:[{label:'Hardness',val:'Mohs 6-7',pct:68},{label:'Abundance',val:'Very High',pct:90},{label:'Radioactivity',val:'Low natural',pct:20}]},
+  {id:'marble',name:'Marble',sci:'Metamorphic limestone (CaCO₃)',formula:'CaCO₃',color:'#FAFAFA',emoji:'◎',
+   tags:['metamorphic','common'],gradient:'linear-gradient(135deg,#aaaaaa,#dddddd,#ffffff)',
+   bg:'linear-gradient(135deg,#0d0d0d,#1a1a18,#24241e)',
+   hardness:3,rarity:30,
+   composition:'Recrystallized limestone/dolomite; calcite crystals from metamorphic heat and pressure',
+   origin:'Forms from limestone under intense heat and pressure in mountain-building zones',
+   physical:'White to multicolored, crystalline, hardness 3, density 2.7 g/cm³, veins from mineral impurities',
+   crystal:'Mosaic crystalline',
+   uses:['Sculpture','Architecture','Flooring','Countertops','Lime production'],
+   history:'Michelangelo\'s David; Parthenon (Athens); Taj Mahal; Carrara marble from Italy is world-famous',
+   facts:'Marble dissolves in acid rain — historic monuments are disappearing. It self-heals micro-cracks.',
+   related:['Limestone','Travertine','Onyx'],
+   properties:[{label:'Hardness',val:'Mohs 3',pct:30},{label:'Cultural Value',val:'Maximum',pct:100},{label:'Workability',val:'High',pct:78}]},
+  {id:'coal',name:'Coal',sci:'Carbonaceous sedimentary rock',formula:'C+H+O+N+S',color:'#1C1C1C',emoji:'◼',
+   tags:['common','volcanic'],gradient:'linear-gradient(135deg,#0a0a0a,#2a2a2a,#444)',
+   bg:'linear-gradient(135deg,#050505,#0d0d0d,#151510)',
+   hardness:2.5,rarity:20,
+   composition:'Organic sedimentary rock; compressed ancient plant matter over 300M years',
+   origin:'Carboniferous period forests; peat→lignite→bituminous→anthracite under heat/pressure',
+   physical:'Black to brown, dull to vitreous luster, hardness 1-4, density 1.2-1.8 g/cm³, burns readily',
+   crystal:'Amorphous',
+   uses:['Energy production (27% of global electricity)','Steel production','Chemical feedstock'],
+   history:'Powered the Industrial Revolution; shaped the modern world; now driving the climate crisis',
+   facts:'Coal is made from ancient trees. The energy in coal is compressed sunlight from 300 million years ago.',
+   related:['Graphite','Peat','Coke'],
+   properties:[{label:'Energy Content',val:'High',pct:78},{label:'Carbon Content',val:'60-98%',pct:80},{label:'CO₂ Emission',val:'Very High',pct:95}]}
+];
 
-function checkKey(){
-  const v = document.getElementById('keyInput').value;
-  const err = document.getElementById('keyError');
-  if(v === SECRET){
-    document.getElementById('lockScreen').classList.add('hidden');
-    initApp();
-  } else {
-    err.classList.add('show');
-    document.getElementById('keyInput').style.borderColor='#e8547a';
-    setTimeout(()=>{err.classList.remove('show');document.getElementById('keyInput').style.borderColor='var(--pink)';},2000);
-  }
-}
-document.getElementById('keyInput').addEventListener('keydown',e=>{if(e.key==='Enter')checkKey()});
+// STATE
+let currentCat = 'metals';
+let mouseX = 0, mouseY = 0, cursorX = 0, cursorY = 0;
 
-function initApp(){
-  const now = new Date();
-  if(now >= BIRTHDAY){
-    document.getElementById('birthdayScreen').classList.remove('hidden');
-    launchBgParticles();
-  } else {
-    document.getElementById('countdownScreen').classList.remove('hidden');
-    startCountdown();
-  }
-}
+// CURSOR
+document.addEventListener('mousemove', e => { mouseX = e.clientX; mouseY = e.clientY; });
+(function animCursor(){
+  cursorX += (mouseX - cursorX) * 0.12;
+  cursorY += (mouseY - cursorY) * 0.12;
+  const c = document.getElementById('cursor');
+  const r = document.getElementById('cursor-ring');
+  if(c){ c.style.left = mouseX+'px'; c.style.top = mouseY+'px'; }
+  if(r){ r.style.left = cursorX+'px'; r.style.top = cursorY+'px'; }
+  requestAnimationFrame(animCursor);
+})();
 
-function startCountdown(){
-  function tick(){
-    const now = new Date();
-    const diff = BIRTHDAY - now;
-    if(diff <= 0){
-      document.getElementById('countdownScreen').classList.add('hidden');
-      document.getElementById('birthdayScreen').classList.remove('hidden');
-      launchBgParticles();
-      return;
-    }
-    const d = Math.floor(diff/86400000);
-    const h = Math.floor((diff%86400000)/3600000);
-    const m = Math.floor((diff%3600000)/60000);
-    const s = Math.floor((diff%60000)/1000);
-    document.getElementById('cdDays').textContent = String(d).padStart(2,'0');
-    document.getElementById('cdHours').textContent = String(h).padStart(2,'0');
-    document.getElementById('cdMins').textContent = String(m).padStart(2,'0');
-    document.getElementById('cdSecs').textContent = String(s).padStart(2,'0');
-  }
-  tick();
-  setInterval(tick, 1000);
-}
-
-function showPanel(name, btn){
-  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-  document.getElementById('panel-'+name).classList.add('active');
-  if(btn) btn.classList.add('active');
-}
-
-function cutCake(){
-  if(!cakeCut){
-    cakeCut = true;
-    document.querySelectorAll('#fl1,#fl2,#fl3').forEach(f=>f.style.display='none');
-  }
-  spawnConfetti(80);
-  const s = cakeSurprises[cakeClickIdx % cakeSurprises.length];
-  document.getElementById('burstEmoji').textContent = s.emoji;
-  document.getElementById('burstTitle').textContent = s.title;
-  document.getElementById('burstMsg').textContent = s.msg;
-  document.getElementById('burstModal').classList.add('show');
-  cakeClickIdx++;
-}
-
-function closeBurst(){
-  document.getElementById('burstModal').classList.remove('show');
-}
-
-function spawnConfetti(n){
-  const colors=['#ff85a1','#ffb3c6','#c9a8ff','#ffd700','#a8edea','#ff4d7d','#f9c6da'];
-  for(let i=0;i<n;i++){
-    const el=document.createElement('div');
-    el.className='confetti-piece';
-    el.style.cssText=`left:${Math.random()*100}vw;top:-20px;background:${colors[Math.floor(Math.random()*colors.length)]};width:${6+Math.random()*10}px;height:${6+Math.random()*10}px;border-radius:${Math.random()>.5?'50%':'3px'};animation-duration:${2+Math.random()*3}s;animation-delay:${Math.random()*.8}s;`;
-    document.body.appendChild(el);
-    el.addEventListener('animationend',()=>el.remove());
-  }
-}
-
-function launchBgParticles(){
-  const canvas=document.getElementById('bgCanvas');
-  const ctx=canvas.getContext('2d');
-  let W=window.innerWidth,H=window.innerHeight;
-  canvas.width=W;canvas.height=H;
-  window.addEventListener('resize',()=>{W=window.innerWidth;H=window.innerHeight;canvas.width=W;canvas.height=H});
-  const pts=Array.from({length:35},()=>({
-    x:Math.random()*W,y:Math.random()*H,
-    vx:(Math.random()-.5)*.4,vy:(Math.random()-.5)*.4,
-    r:3+Math.random()*5,
-    c:['#ffb3c6','#c9a8ff','#ffd700','#a8edea','#ff85a1'][Math.floor(Math.random()*5)],
-    o:.3+Math.random()*.5
-  }));
-  function draw(){
-    ctx.clearRect(0,0,W,H);
-    pts.forEach(p=>{
-      p.x+=p.vx;p.y+=p.vy;
-      if(p.x<0||p.x>W)p.vx*=-1;
-      if(p.y<0||p.y>H)p.vy*=-1;
-      ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
-      ctx.fillStyle=p.c;ctx.globalAlpha=p.o;ctx.fill();
+// STARFIELD
+(function initStars(){
+  const c = document.getElementById('starfield');
+  const ctx = c.getContext('2d');
+  let W, H, stars = [];
+  function resize(){ W = c.width = window.innerWidth; H = c.height = window.innerHeight; }
+  resize(); window.addEventListener('resize', resize);
+  for(let i=0;i<250;i++) stars.push({
+    x:Math.random()*2000, y:Math.random()*2000,
+    r:Math.random()*1.8+0.2, speed:Math.random()*0.4+0.05,
+    alpha:Math.random()*0.8+0.2,
+    tp: Math.random()*Math.PI*2,
+    ts: Math.random()*0.02+0.005,
+    color: ['#fff','#cce8ff','#ffeecc','#ffd0ff'][Math.floor(Math.random()*4)]
+  });
+  let t=0;
+  (function draw(){
+    t+=0.016; ctx.clearRect(0,0,W,H);
+    ctx.globalAlpha = 1;
+    stars.forEach(s=>{
+      s.x -= s.speed*0.3; s.y -= s.speed*0.1;
+      if(s.x<0) s.x=W+10; if(s.y<0) s.y=H+10;
+      const a = s.alpha * (0.5 + 0.5*Math.sin(t*80*s.ts + s.tp));
+      ctx.globalAlpha = a;
+      ctx.fillStyle = s.color;
+      ctx.beginPath();
+      ctx.arc(s.x%W, s.y%H, s.r, 0, Math.PI*2);
+      ctx.fill();
     });
     ctx.globalAlpha=1;
     requestAnimationFrame(draw);
-  }
-  draw();
-  spawnConfetti(60);
+  })();
+})();
+
+// PARTICLES
+(function initParticles(){
+  const c = document.getElementById('particles');
+  const ctx = c.getContext('2d');
+  let W, H, pts = [];
+  function resize(){ W = c.width = window.innerWidth; H = c.height = window.innerHeight; }
+  resize(); window.addEventListener('resize', resize);
+  for(let i=0;i<50;i++) pts.push({
+    x:Math.random()*1920, y:Math.random()*1080,
+    vx:(Math.random()-0.5)*0.4, vy:(Math.random()-0.5)*0.4,
+    life:Math.random(), decay:Math.random()*0.003+0.001,
+    size:Math.random()*3+1,
+    color:['#00ffff','#8b00ff','#ffd700','#ff006e'][Math.floor(Math.random()*4)]
+  });
+  (function draw(){
+    ctx.clearRect(0,0,W,H);
+    pts.forEach(p=>{
+      p.x += p.vx; p.y += p.vy; p.life -= p.decay;
+      if(p.life<=0){p.x=Math.random()*W;p.y=Math.random()*H;p.life=1;}
+      ctx.beginPath();
+      ctx.arc(p.x%W, p.y%H, p.size*p.life, 0, Math.PI*2);
+      ctx.globalAlpha = p.life*0.35;
+      ctx.fillStyle = p.color;
+      ctx.fill();
+    });
+    ctx.globalAlpha=1;
+    requestAnimationFrame(draw);
+  })();
+})();
+
+// NAV DOTS
+function setDot(n){ ['dot0','dot1','dot2'].forEach((id,i)=>document.getElementById(id).classList.toggle('active',i===n)); }
+
+// SHOW COLLECTION
+function showCollection(cat){
+  currentCat = cat;
+  const data = cat==='metals'?METALS:ROCKS;
+  const colTitle = document.getElementById('col-title');
+  colTitle.textContent = cat==='metals'?'⚙ METALS COLLECTION':'💠 ROCKS & GEMS COLLECTION';
+  colTitle.style.color = cat==='metals'?'#FFD700':'#00FFFF';
+  const grid = document.getElementById('col-grid');
+  grid.innerHTML = '';
+  data.forEach(item=>{
+    const card = document.createElement('div');
+    card.className = 'item-card';
+    const tagHTML = item.tags.map(t=>`<span class="tag tag-${t}">${t.toUpperCase()}</span>`).join('');
+    card.innerHTML = `
+      <div class="item-card-bg" style="background:${item.gradient}"></div>
+      <div class="item-card-overlay"></div>
+      <div class="item-glow" style="box-shadow:inset 0 0 40px ${item.color}33"></div>
+      <div class="item-card-content">
+        <div style="font-size:1.5rem;margin-bottom:0.4rem">${item.emoji}</div>
+        <div class="item-name">${item.name}</div>
+        <div class="item-formula">${item.formula}</div>
+        <div class="item-tags">${tagHTML}</div>
+      </div>`;
+    card.addEventListener('mousemove', e=>{
+      const rect = card.getBoundingClientRect();
+      const dx = (e.clientX - rect.left - rect.width/2)/(rect.width/2);
+      const dy = (e.clientY - rect.top - rect.height/2)/(rect.height/2);
+      card.style.transform = `translateY(-6px) scale(1.02) rotateY(${dx*10}deg) rotateX(${-dy*10}deg)`;
+      card.style.boxShadow = `${-dx*15}px ${-dy*15}px 40px ${item.color}44, 0 20px 60px rgba(0,0,0,0.6)`;
+      card.style.borderColor = item.color+'44';
+    });
+    card.addEventListener('mouseleave', ()=>{ card.style.transform=''; card.style.boxShadow=''; card.style.borderColor=''; });
+    card.addEventListener('click', ()=>showDetail(item));
+    grid.appendChild(card);
+  });
+  switchPage('collection-page'); setDot(1);
 }
 
-['💕','🌸','✨','🎀','💖','🦋','🌷','⭐'].forEach((e,i)=>{
-  const d=document.createElement('div');
-  d.className='floating-emoji';
-  d.textContent=e;
-  d.style.cssText=`left:${10+Math.random()*80}%;top:${10+Math.random()*80}%;animation-delay:${i*0.7}s;animation-duration:${4+Math.random()*3}s`;
-  document.getElementById('lockScreen').appendChild(d);
-});
+// SHOW DETAIL
+function showDetail(item){
+  document.getElementById('detail-name').textContent = item.name;
+  document.getElementById('detail-sciname').textContent = item.sci;
+  document.getElementById('detail-hero-bg').style.background = item.gradient;
+  document.getElementById('detail-tags').innerHTML = item.tags.map(t=>`<span class="tag tag-${t}">${t.toUpperCase()}</span>`).join('');
+  document.getElementById('detail-back').onclick = ()=>goBack('collection');
+  document.documentElement.style.setProperty('--accent-color', item.color);
+  const ac = item.color;
+  const hdots = Array.from({length:10},(_,i)=>`<div class="h-dot${i<Math.round(item.hardness)?' filled':''}"></div>`).join('');
+  const propBars = item.properties.map((p,i)=>`
+    <div class="chart-row">
+      <div class="chart-label">${p.label}</div>
+      <div class="chart-track"><div class="chart-fill" style="--w:${p.pct}%;width:${p.pct}%;background:${ac};animation-delay:${i*0.15}s"></div></div>
+      <div class="chart-val">${p.val.length>8?p.val.substring(0,8)+'…':p.val}</div>
+    </div>`).join('');
+  document.getElementById('detail-body').innerHTML = `
+    <div class="detail-section">
+      <h3>Properties</h3>
+      <div class="detail-grid">
+        <div class="detail-stat"><div class="stat-label">ORIGIN</div><div class="stat-value" style="font-size:0.7rem;color:rgba(255,255,255,0.8)">${item.origin.substring(0,55)}…</div></div>
+        <div class="detail-stat"><div class="stat-label">CRYSTAL STRUCTURE</div><div class="stat-value" style="color:${ac};font-size:0.75rem">${item.crystal}</div></div>
+        <div class="detail-stat"><div class="stat-label">HARDNESS (MOHS)</div><div class="hardness-dots">${hdots}</div><div style="font-size:0.65rem;color:rgba(255,255,255,0.35);margin-top:4px;font-family:'Share Tech Mono'">${item.hardness}/10</div></div>
+        <div class="detail-stat"><div class="stat-label">RARITY INDEX</div><div class="rarity-bar"><div class="rarity-fill" style="width:${item.rarity}%;background:linear-gradient(90deg,${ac}88,${ac})"></div></div><div class="rarity-label"><span>Common</span><span>Rare</span></div></div>
+      </div>
+    </div>
+    <div class="detail-section">
+      <h3>Composition & Physical Properties</h3>
+      <p class="detail-text"><strong style="color:${ac}">Composition:</strong> ${item.composition}</p>
+      <p class="detail-text" style="margin-top:0.6rem"><strong style="color:${ac}">Physical:</strong> ${item.physical}</p>
+    </div>
+    <div class="detail-section">
+      <h3>Performance Analysis</h3>
+      <div class="chart-bar-wrap">${propBars}</div>
+    </div>
+    <div class="detail-section">
+      <h3>Real-World Uses</h3>
+      <div class="uses-list">${item.uses.map(u=>`<div class="use-chip">${u}</div>`).join('')}</div>
+    </div>
+    <div class="detail-section">
+      <h3>Historical Significance</h3>
+      <p class="detail-text">${item.history}</p>
+    </div>
+    <div class="detail-section">
+      <h3>Fascinating Facts</h3>
+      <div class="fact-box">${item.facts}</div>
+    </div>
+    <div class="detail-section">
+      <h3>Related Minerals & Elements</h3>
+      <div class="related-grid">${item.related.map(r=>`<div class="related-chip" onclick="findAndShow('${r}')">${r}</div>`).join('')}</div>
+    </div>
+    <div style="height:2rem"></div>`;
+  switchPage('detail-page'); setDot(2);
+  document.getElementById('detail-page').scrollTop = 0;
+}
+
+function findAndShow(name){
+  const item = [...METALS,...ROCKS].find(x=>x.name.toLowerCase()===name.toLowerCase());
+  if(item) showDetail(item);
+}
+
+function goBack(to){
+  if(to==='intro'){ switchPage('intro-page'); setDot(0); }
+  else { switchPage('collection-page'); setDot(1); }
+}
+
+function switchPage(id){
+  ['intro-page','collection-page','detail-page'].forEach(p=>{
+    const el = document.getElementById(p);
+    if(el) el.classList.toggle('hidden', p!==id);
+  });
+}
+
+// Remove watermark
+setTimeout(()=>{ const wm=document.getElementById('watermark'); if(wm) wm.style.display='none'; }, 4200);
 </script>
 </body>
 </html>
-HTMLEOF
-echo "Done"
